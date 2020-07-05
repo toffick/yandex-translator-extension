@@ -14,11 +14,14 @@
 		/* Additional Checks */
 		"useDefineForClassFields": true,
 		"skipLibCheck": true,
-		"noImplicitAny": false,
-		"noUnusedLocals": false
+		"noUnusedLocals": false,
+		"typeRoots": [
+			"./types"
+		]
 	},
 	"include": [
 		"source",
-		"webpack.config.ts"
+		"webpack.config.ts",
+		"types/*.ts"
 	]
 }

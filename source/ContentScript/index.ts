@@ -1,6 +1,6 @@
 import { browser, Runtime } from 'webextension-polyfill-ts';
 
-import { APP_ID, REQUEST_METHOD } from '../constants/GlobalConstants'
+import { APP_ID, PORT_REQUEST_METHOD } from '../constants/GlobalConstants'
 import { IdHelper } from '../helpers/IdHelper'
 
 let backgroundPort: Runtime.Port = browser.runtime.connect();;
@@ -11,8 +11,7 @@ let backgroundPort: Runtime.Port = browser.runtime.connect();;
  * @method onMessage
  * @param event
  */
-const onMessage = (event: any) => {
-
+const onMessage = () => {
 
 
 
@@ -22,8 +21,8 @@ const onMessage = (event: any) => {
  * @method backgroundRequest
  * @param {String} method
  */
-const backgroundRequest = (method: REQUEST_METHOD, requestData: Object) => {
-    const id = `${method}_${IdHelper.getId()}`;
+const backgroundRequest = (method: PORT_REQUEST_METHOD, requestData: Object) => {
+    const id = `${method}_${IdHelper.getId()}`; // rm getId
 
     const result = new Promise((resolve, reject) => {
 
@@ -56,11 +55,12 @@ const getSelection = () => {
     return t;
 }
 
-document.addEventListener("mouseup", function (event) {
+document.addEventListener("mouseup", function () {
 
     const selection = getSelection()
+    console.log("selection", selection)
     if (selection && !selection.isCollapsed) {
         const selectionText = selection.toString();
-        backgroundRequest(REQUEST_METHOD.SELECTED_TRANSLATE, { originalText: selectionText })
+        backgroundRequest(PORT_REQUEST_METHOD.SELECTED_TRANSLATE, { originalText: selectionText })
     }
 });

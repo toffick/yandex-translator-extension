@@ -1,4 +1,5 @@
-import { LANG_RU} from './LanguageConstants'
-export const YANDEX_API_URL = {
-    [LANG_RU.symbol]: 'https://translate.yandex.ru'
-} 
+export const YANDEX_API_URL = 'https://translate.yandex.ru';
+
+export const SID_TIMEOUT = 10800000 //TODO 
+
+

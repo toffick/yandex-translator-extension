@@ -6,6 +6,7 @@
   "repository": "https://github.com/abhijithvijayan/web-extension-starter.git",
   "author": "abhijithvijayan <34790378+abhijithvijayan@users.noreply.github.com>",
   "license": "MIT",
+  "types": "./types/index.d.ts",
   "engines": {
     "node": ">=10.0.0",
     "yarn": ">= 1.0.0"
@@ -40,7 +41,7 @@
     "@babel/plugin-proposal-object-rest-spread": "^7.9.6",
     "@babel/plugin-transform-destructuring": "^7.9.5",
     "@babel/plugin-transform-runtime": "^7.9.6",
-    "@babel/preset-env" : "^7.9.6",
+    "@babel/preset-env": "^7.9.6",
     "@babel/preset-react": "^7.9.4",
     "@babel/preset-typescript": "^7.9.0",
     "@types/react": "^16.9.35",
