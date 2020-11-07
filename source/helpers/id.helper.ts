@@ -1,5 +1,5 @@
 import * as randomize from 'randomatic';
-import { LENGTH_ID_MESSAGE, PATTERN_ID_MESSAGE } from '../constants/GlobalConstants';
+import { LENGTH_ID_MESSAGE, PATTERN_ID_MESSAGE } from '../constants/global.constants';
 
 export class IdHelper {
 

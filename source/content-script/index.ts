@@ -1,7 +1,7 @@
 import { browser, Runtime } from 'webextension-polyfill-ts';
 
-import { APP_ID, PORT_REQUEST_METHOD } from '../constants/GlobalConstants'
-import { IdHelper } from '../helpers/IdHelper'
+import { APP_ID, PORT_REQUEST_METHOD } from '../constants/global.constants'
+import { IdHelper } from '../helpers/id.helper'
 
 let backgroundPort: Runtime.Port = browser.runtime.connect();;
 

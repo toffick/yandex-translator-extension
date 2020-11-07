@@ -1,6 +1,6 @@
 import { PARTS_OF_SPEECH } from '../constants/LanguageConstants';
 
-class TranslateExample {
+class TranslateWithExample {
     src?: string;
     dst?: string;
 
@@ -10,14 +10,14 @@ class TranslateExample {
     }
 }
 
-export default class TranslateExampleResult {
+export default class TranslateWithExampleResult {
 
     original: string;
     pos: string;
     translate: string;
     languageFrom: string;
     languageTo: string;
-    examples: TranslateExample[];
+    examples: TranslateWithExample[];
 
     constructor(
         original: string,
@@ -25,13 +25,13 @@ export default class TranslateExampleResult {
         translate: string,
         langFrom: string,
         langTo: string,
-        examples: Partial<TranslateExample>[]
+        examples: Partial<TranslateWithExample>[]
     ) {
         this.original = original;
         this.pos = pos;
         this.translate = translate;
         this.languageFrom = langFrom;
         this.languageTo = langTo;
-        this.examples = examples.map((exmp) => new TranslateExample(exmp.src, exmp.dst))
+        this.examples = examples.map((exmp) => new TranslateWithExample(exmp.src, exmp.dst))
     }
 }

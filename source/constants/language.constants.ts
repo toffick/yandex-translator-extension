@@ -11,6 +11,7 @@ export const LANGUAGES = {
         title: 'English'
     }
 }
+
 export const PARTS_OF_SPEECH = {
     NOUN: 'noun',
     EDJECTIVE: 'adjective',

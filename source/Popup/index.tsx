@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { browser } from 'webextension-polyfill-ts';
 
-import Popup from './Popup';
+import Popup from './popup';
 
 ReactDOM.render(<Popup />, document.getElementById('popup-root'));
 
@@ -10,7 +10,7 @@ ReactDOM.render(<Popup />, document.getElementById('popup-root'));
 /* global EXTENSION */
 /* global INPAGE_PATH_PACK_FOLDER */
 
-import { APP_ID } from '../constants/GlobalConstants'
+import { APP_ID } from '../constants/global.constants'
 /* eslint-disable global-require */
 /* eslint-disable import/no-dynamic-require */
 

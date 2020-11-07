@@ -1,4 +1,4 @@
-export * as LANGUAGE_CONSTANTS from './LanguageConstants'
-export * as STORAGE_KEYS from './StorageKeysConstants';
-export * as GLOBAL_CONSTANTS from './GlobalConstants';
-export * as API_CONSTANTS from './ApiConstants';
+export * as LANGUAGE_CONSTANTS from './language.constants'
+export * as STORAGE_KEYS from './storage.keys.constants';
+export * as GLOBAL_CONSTANTS from './global.constants';
+export * as API_CONSTANTS from './api.onstants';
