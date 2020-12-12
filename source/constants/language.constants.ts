@@ -1,4 +1,4 @@
-import {TLanguage} from 'yandex-translator-extension';
+import { TLanguage } from 'yandex-translator-extension';
 
 export const LANGUAGES = {
   RU: {

@@ -1,7 +1,7 @@
-import {browser, Runtime} from 'webextension-polyfill-ts';
+import { browser, Runtime } from 'webextension-polyfill-ts';
 
-import {APP_ID, PORT_REQUEST_METHOD} from '../constants/global.constants';
-import {IdHelper} from '../helpers/id.helper';
+import { APP_ID, PORT_REQUEST_METHOD } from '../constants/global.constants';
+import { IdHelper } from '../helpers/id.helper';
 
 const backgroundPort: Runtime.Port = browser.runtime.connect();
 
@@ -10,7 +10,7 @@ const backgroundPort: Runtime.Port = browser.runtime.connect();
  * @method onMessage
  * @param event
  */
-const onMessage = () => {};
+const onMessage = () => { };
 
 /**
  * @method backgroundRequest
@@ -18,12 +18,12 @@ const onMessage = () => {};
  */
 const backgroundRequest = (
   method: PORT_REQUEST_METHOD,
-  requestData: Record<string, any>
-) => {
+  requestData: Record<string, any>,
+): Promise<unknown> => {
   const id = `${method}_${IdHelper.getId()}`; // rm getId
 
   const result = new Promise((resolve, reject) => {
-    const cb = ({data}) => {
+    const cb = ({ data }: { data: any }) => {
       if (data.error || (data.res && data.res.error)) {
         reject(data.error || data.res.error);
       } else {
@@ -53,7 +53,7 @@ const getSelection = () => {
   return t;
 };
 
-document.addEventListener('mouseup', function () {
+document.addEventListener('mouseup', () => {
   const selection = getSelection();
   console.log('selection', selection);
   if (selection && !selection.isCollapsed) {

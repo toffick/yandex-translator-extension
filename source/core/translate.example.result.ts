@@ -1,4 +1,4 @@
-import {PARTS_OF_SPEECH} from '../constants/LanguageConstants';
+// import { PARTS_OF_SPEECH } from '../constants/LanguageConstants';
 
 class TranslateWithExample {
   src?: string;
@@ -30,7 +30,7 @@ export default class TranslateWithExampleResult {
     translate: string,
     langFrom: string,
     langTo: string,
-    examples: Partial<TranslateWithExample>[]
+    examples: Partial<TranslateWithExample>[],
   ) {
     this.original = original;
     this.pos = pos;
@@ -38,7 +38,7 @@ export default class TranslateWithExampleResult {
     this.languageFrom = langFrom;
     this.languageTo = langTo;
     this.examples = examples.map(
-      (exmp) => new TranslateWithExample(exmp.src, exmp.dst)
+      (exmp) => new TranslateWithExample(exmp.src, exmp.dst),
     );
   }
 }

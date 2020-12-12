@@ -1,9 +1,10 @@
 import axios from 'axios';
-import {TSid} from 'yandex-translator-extension';
+import { TSid } from 'yandex-translator-extension';
 
 import StorageService from './storage.service';
-import {STORAGE_KEYS, API_CONSTANTS} from '../constants';
-import {translateWithExamples, translate} from '../api/translator.api';
+import { STORAGE_KEYS, API_CONSTANTS } from '../constants';
+import { StringHelper } from '../helpers/string.helper';
+import { translateWithExamples, translate } from '../api/translator.api';
 import TranslateWithExampleResult from '../core/translate.example.result';
 
 export class ApiService {
@@ -13,27 +14,29 @@ export class ApiService {
     this.translateCounter = 0;
   }
 
-  private getTranslateCounter() {
+  private getTranslateCounter(): number {
     return this.translateCounter;
   }
 
-  private getAndIncreaseCounter() {
-    return this.translateCounter++;
+  private getAndIncreaseCounter(): number {
+    return this.translateCounter += 1;
   }
 
   private async getSid(): Promise<TSid> {
     let sid: TSid = await StorageService.get(
-      STORAGE_KEYS.TRANSLATOR_SESSION_ID
+      STORAGE_KEYS.TRANSLATOR_SESSION_ID,
     );
     const now = new Date();
 
     if (!sid || now.getTime() - new Date(sid.date).getTime() > 0 /* TODO */) {
       const sessionId = await this.getSessionIdFromNet();
+      console.log('ApiService -> sessionId', sessionId);
 
       sid = {
         id: sessionId,
         date: now.toString(),
       } as TSid;
+      console.log('ApiService -> sid', sid);
 
       await StorageService.set(STORAGE_KEYS.TRANSLATOR_SESSION_ID, sid);
     }
@@ -41,24 +44,32 @@ export class ApiService {
   }
 
   private async getSessionIdFromNet(): Promise<string | null> {
-    const translatorUrl = API_CONSTANTS.YANDEX_API_URL;
-    const page = await axios.get(translatorUrl);
-    // TODO error handling
-    const {data} = page;
-    const matchResult = data.match(/SID:\s*'(.+)'/);
-    if (!matchResult) {
-      return null;
-    }
+    // const translatorUrl = API_CONSTANTS.YANDEX_API_URL;
+    // const page = await axios.get(translatorUrl);
+    // // TODO error handling
+    // const { data } = page;
+    // const matchResult = data.match(/SID:\s*'(.+)'/);
+    // if (!matchResult) {
+    //   return null;
+    // }
+
+    const matchResult = [, '4578fe45.885c4df5.edf9b6ba.47875647d22747']
     // TODO empty result handling
     const [, originalSid] = matchResult;
+    console.log('ApiService -> matchResult', matchResult);
 
-    const originalSidParts = originalSid.split('.');
-    const sid = `${originalSidParts[0].reverse()}.${originalSidParts[1].reverse()}.${originalSidParts[2].reverse()}`;
-    return sid;
+    if (!originalSid) {
+      return null;
+    }
+
+    return originalSid
+      .split('.')
+      .map((item) => StringHelper.reverse(item))
+      .join('.')
   }
 
   async translateWithExamples(
-    originalText: string
+    originalText: string,
   ): Promise<TranslateWithExampleResult[]> {
     const sid: TSid = await this.getSid();
     const langFrom = await StorageService.getlanguageFrom();
@@ -68,12 +79,12 @@ export class ApiService {
     }
     // TODO autodetect language from
     const {
-      data: {result},
+      data: { result },
     } = await translateWithExamples(
       originalText,
       sid.id,
       langFrom.symbol,
-      langTo.symbol
+      langTo.symbol,
     );
     // console.log("TranslateService -> result", result)
 
@@ -81,7 +92,7 @@ export class ApiService {
       .filter((item: any) => item && !item.translation.other)
       .map((item: any) => {
         const {
-          translation: {text, pos},
+          translation: { text, pos },
           examples,
         } = item;
         return new TranslateWithExampleResult(
@@ -90,7 +101,7 @@ export class ApiService {
           text,
           langFrom.symbol,
           langTo.symbol,
-          examples
+          examples,
         );
       });
 
@@ -107,7 +118,7 @@ export class ApiService {
 
     const id = `${sid.id}-${this.getAndIncreaseCounter()}-0`;
     const {
-      data: {result},
+      data: { result },
     } = await translate(originalText, id, langFrom.symbol, langTo.symbol);
     console.log('ApiService -> result', result);
 
@@ -115,7 +126,7 @@ export class ApiService {
       .filter((item: any) => item && !item.translation.other)
       .map((item: any) => {
         const {
-          translation: {text, pos},
+          translation: { text, pos },
           examples,
         } = item;
         return new TranslateWithExampleResult(
@@ -124,7 +135,7 @@ export class ApiService {
           text,
           langFrom.symbol,
           langTo.symbol,
-          examples
+          examples,
         );
       });
 
