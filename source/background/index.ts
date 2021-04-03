@@ -1,34 +1,37 @@
-import { browser } from 'webextension-polyfill-ts';
+import { browser, Runtime } from 'webextension-polyfill-ts';
 
 import { LANGUAGE_CONSTANTS, STORAGE_KEYS } from '../constants';
 import StorageService from '../services/storage.service';
-import { TranslateService } from '../services/translate.service';
+import TranslateService from '../services/translate.service';
 import { APP_ID, PORT_REQUEST_METHOD } from '../constants/global.constants';
-
-type ContentMessage = {
-  data: any;
-  method: PORT_REQUEST_METHOD;
-};
-let translateService: TranslateService;
+import { BackgroundMessage, BackgroundResult } from '../types';
 
 const onSelectedTranslateHandler = async (text: string) => {
-  // const result = await translateService.translateWithExamples(text);
-  const result = await translateService.translate(text);
-  console.log(result);
+  const result = await TranslateService.translate(text);
+  return result;
 };
 
-const messageHandler = async (msg: ContentMessage) => {
-  const { data, method } = msg;
-  switch (method) {
+const onMessage = async (msg: BackgroundMessage, port: Runtime.Port) => {
+  const { data, method, id, target, appId } = msg;
+  let result = null;
+  const error = null;
+  try {
+    switch (method) {
     case PORT_REQUEST_METHOD.SELECTED_TRANSLATE:
-      await onSelectedTranslateHandler(data.originalText);
+      result = await onSelectedTranslateHandler(data.originalText);
       break;
     default:
       break;
+    }
+
+  } catch (error) {
+    console.log(error);
+    error = error;
   }
+  port.postMessage({ result, id, target, appId, error });
 };
 
-const init = async (): Promise<void> => {
+(async () => {
   const langFrom = await StorageService.getlanguageFrom();
 
   if (!langFrom) {
@@ -47,11 +50,7 @@ const init = async (): Promise<void> => {
     );
   }
 
-  translateService = new TranslateService();
-};
-
-browser.runtime.onConnect.addListener((port) => {
-  port.onMessage.addListener(messageHandler);
-});
-
-init();
+  browser.runtime.onConnect.addListener((port) => {
+    port.onMessage.addListener(onMessage);
+  });
+})();

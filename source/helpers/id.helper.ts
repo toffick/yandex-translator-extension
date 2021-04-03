@@ -4,8 +4,10 @@ import {
   PATTERN_ID_MESSAGE,
 } from '../constants/global.constants';
 
-export class IdHelper {
+class IdHelper {
   static getId() {
     return randomatic(PATTERN_ID_MESSAGE, LENGTH_ID_MESSAGE);
   }
 }
+
+export default IdHelper;

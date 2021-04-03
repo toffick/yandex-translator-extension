@@ -74,4 +74,5 @@ const setupStreams = () => {
   currentPort.onMessage.addListener(onBackgroundMessage);
 };
 
+
 setupStreams();

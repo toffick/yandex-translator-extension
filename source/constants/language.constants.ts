@@ -1,5 +1,3 @@
-import { TLanguage } from 'yandex-translator-extension';
-
 export const LANGUAGES = {
   RU: {
     symbol: 'ru',

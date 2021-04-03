@@ -1,21 +1,24 @@
 import { browser, Runtime } from 'webextension-polyfill-ts';
 
 import { APP_ID, PORT_REQUEST_METHOD } from '../constants/global.constants';
-import { IdHelper } from '../helpers/id.helper';
+import IdHelper from '../helpers/id.helper';
+import { renderTooltip } from './app';
 
-const backgroundPort: Runtime.Port = browser.runtime.connect();
+const cbsMap: Map<string, (...args: any) => any> = new Map();
+let backgroundPort: Runtime.Port;
 
-/**
- * On content script message
- * @method onMessage
- * @param event
- */
-const onMessage = () => { };
+const onMessage = (message: any) => {
+  const { id } = message;
+  const cb = cbsMap.get(id);
 
-/**
- * @method backgroundRequest
- * @param {String} method
- */
+  if (!cb) {
+    return;
+  }
+
+  cb(message);
+  cbsMap.delete(id);
+};
+
 const backgroundRequest = (
   method: PORT_REQUEST_METHOD,
   requestData: Record<string, any>,
@@ -23,11 +26,11 @@ const backgroundRequest = (
   const id = `${method}_${IdHelper.getId()}`; // rm getId
 
   const result = new Promise((resolve, reject) => {
-    const cb = ({ data }: { data: any }) => {
-      if (data.error || (data.res && data.res.error)) {
-        reject(data.error || data.res.error);
+    const cb = ({ error, result }: { error: any, result: any; }) => {
+      if (error) {
+        reject(error);
       } else {
-        resolve(data.res);
+        resolve(result);
       }
     };
 
@@ -38,6 +41,8 @@ const backgroundRequest = (
       appId: APP_ID,
       data: requestData,
     });
+
+    cbsMap.set(id, cb);
   });
 
   return result;
@@ -53,13 +58,31 @@ const getSelection = () => {
   return t;
 };
 
-document.addEventListener('mouseup', () => {
+document.addEventListener('mouseup', (event) => {
   const selection = getSelection();
-  console.log('selection', selection);
   if (selection && !selection.isCollapsed) {
     const selectionText = selection.toString();
     backgroundRequest(PORT_REQUEST_METHOD.SELECTED_TRANSLATE, {
       originalText: selectionText,
+    }).then((res) => {
+      console.log('document.addEventListener ~ event', event);
+      const { pageX, pageY } = event;
+      console.log('document.addEventListener ~ screenY', screenY);
+      console.log('document.addEventListener ~ screenX', screenX);
+      console.log(res);
+      renderTooltip({
+        translation: {
+          original: selectionText,
+          translate: res,
+        },
+        position: { Y: pageY, X: pageX },
+      });
+
     });
   }
 });
+
+(async () => {
+  backgroundPort = browser.runtime.connect();
+  backgroundPort.onMessage.addListener(onMessage);
+})();
