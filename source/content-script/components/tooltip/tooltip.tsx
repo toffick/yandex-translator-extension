@@ -1,5 +1,7 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import styled from 'styled-components';
+import { TOOLTIP_ROOT_ID } from '../../constants/app.constants';
+import { isTooltipElementId } from '../../helpers/tooltip.helpers';
 
 const TooltipBox = styled.div`
   box-shadow: rgba(0, 0, 0, 0.2) 0px 1px 3px;
@@ -34,39 +36,54 @@ const TooltipText = styled.div`
 `;
 
 const CloseButton = styled.div`
-  height: 21px;
+  height: 16px;
   opacity: 0.4;
   position: absolute;
-  right: 2px;
-  top: 2px;
-  width: 21px;
-  background: url(${chrome.extension.getURL('assets/close.png')}) no-repeat;
-  border-width: 1px;
-  border-style: solid;
-  border-color: transparent;
-  border-image: initial;
+  right: 5px;
+  top: 5px;
+  width: 16px;
+  background: url("${chrome.extension.getURL('assets/images/close.png')}")
+    no-repeat;
   outline: 0px;
+  :hover {
+    cursor: pointer;
+  }
 `;
-console.log('chrome.extension.getURLssets/close.png)', chrome.extension.getURL('assets/close.png'));
 
 const TooltipComponent = ({
   originalText,
-  translate,
+  translation,
   positionX,
   positionY,
-}) => (
-  <TooltipBox positionX={positionX} positionY={positionY}>
-    <CloseButton />
-    <div className="closeButton" aria-label="Close" role="button"></div>
-    <TooltipTextArea>
-      <TooltipLanguage>English</TooltipLanguage>
-      <div className="text">{originalText}</div>
-    </TooltipTextArea>
-    <TooltipTextArea>
-      <TooltipLanguage>Russian</TooltipLanguage>
-      <TooltipText>{translate}</TooltipText>
-    </TooltipTextArea>
-  </TooltipBox>
-);
+  onClose,
+}) => {
+  useEffect(() => {
+    const eventListener = (e) => {
+      if (e.path.some(({ id }: { id: string }) => isTooltipElementId(id))) {
+        return;
+      } else {
+        onClose();
+      }
+
+      return () => window.removeEventListener;
+    };
+    window.addEventListener('click', eventListener);
+    return () => window.removeEventListener('click', eventListener);
+  }, []);
+  return (
+    <TooltipBox positionX={positionX} positionY={positionY}>
+      <CloseButton onClick={onClose} />
+
+      <TooltipTextArea>
+        <TooltipLanguage>English</TooltipLanguage>
+        <div className="text">{originalText}</div>
+      </TooltipTextArea>
+      <TooltipTextArea>
+        <TooltipLanguage>Russian</TooltipLanguage>
+        <TooltipText>{translation}</TooltipText>
+      </TooltipTextArea>
+    </TooltipBox>
+  );
+};
 
 export default TooltipComponent;

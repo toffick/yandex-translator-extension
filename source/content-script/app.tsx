@@ -1,43 +1,36 @@
 import ReactDOM from 'react-dom';
 import React from 'react';
 import Tooltip from './components/tooltip/tooltip';
-import TooltipV2 from './components/tooltip/tooltip';
+import { TOOLTIP_ROOT_ID } from './constants/app.constants';
+import { TooltipData } from './types';
 
-export const renderTooltip = ({
-  translation: { original, translate },
-  position: { X, Y },
-}) => {
-  try {
-    document.body.insertAdjacentHTML(
-      'afterbegin',
-      '<div id=\'mooc-assistant-mount\'></div>'
-    );
-
-    ReactDOM.render(
-      <TooltipV2
-        originalText={original}
-        translate={translate}
-        positionX={X}
-        positionY={Y}
-      />,
-      document.getElementById('mooc-assistant-mount')
-    );
-  } catch (error) {
-    console.log(error);
+export const unmountTooltip = (): void => {
+  const element = ReactDOM.findDOMNode(
+    document.getElementById(TOOLTIP_ROOT_ID)
+  );
+  if (!element) {
+    return;
   }
+  ReactDOM.unmountComponentAtNode(element as Element);
 };
 
-// export const renderTooltip: () => void = () => {
-//   renderApp();
+export const renderTooltip = ({
+  translation: { original, translation },
+  mousePosition: { X, Y },
+}: TooltipData): void => {
+  document.body.insertAdjacentHTML(
+    'afterbegin',
+    `<div id='${TOOLTIP_ROOT_ID}'></div>`
+  );
 
-//   // 如果是在课程页面内，则同步页面上挂在 window 下的变量
-//   if (/(spoc)?\/learn\//.test(window.location.href)) {
-//     const scripts = document.querySelectorAll('script:not([src])');
-//     if (scripts.length !== 0) {
-//       eval(scripts[scripts.length - 1].innerHTML);
-//     }
-//   }
-// };
-
-// // DAMN FIREFOX
-// window.addEventListener('load', loadApp);
+  ReactDOM.render(
+    <Tooltip
+      originalText={original}
+      translation={translation}
+      positionX={X}
+      positionY={Y}
+      onClose={unmountTooltip}
+    />,
+    document.getElementById(TOOLTIP_ROOT_ID)
+  );
+};

@@ -3,6 +3,7 @@ import { browser, Runtime } from 'webextension-polyfill-ts';
 import { APP_ID, PORT_REQUEST_METHOD } from '../constants/global.constants';
 import IdHelper from '../helpers/id.helper';
 import { renderTooltip } from './app';
+import { isTooltipElementId } from './helpers/tooltip.helpers';
 
 const cbsMap: Map<string, (...args: any) => any> = new Map();
 let backgroundPort: Runtime.Port;
@@ -59,23 +60,23 @@ const getSelection = () => {
 };
 
 document.addEventListener('mouseup', (event) => {
+  if (event.path.some(({ id }: { id: string; }) => isTooltipElementId(id))) {
+    return;
+  }
   const selection = getSelection();
+
   if (selection && !selection.isCollapsed) {
     const selectionText = selection.toString();
     backgroundRequest(PORT_REQUEST_METHOD.SELECTED_TRANSLATE, {
       originalText: selectionText,
     }).then((res) => {
-      console.log('document.addEventListener ~ event', event);
       const { pageX, pageY } = event;
-      console.log('document.addEventListener ~ screenY', screenY);
-      console.log('document.addEventListener ~ screenX', screenX);
-      console.log(res);
       renderTooltip({
         translation: {
           original: selectionText,
-          translate: res,
+          translation: res,
         },
-        position: { Y: pageY, X: pageX },
+        mousePosition: { Y: pageY, X: pageX },
       });
 
     });
